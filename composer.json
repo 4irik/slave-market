@@ -20,11 +20,11 @@
         }
     },
     "require": {
-        "php": ">=7.1",
+        "php": "^7.4.1",
         "ext-xdebug": "*",
         "ext-zip": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0"
+        "phpunit/phpunit": "^9.4"
     }
 }
