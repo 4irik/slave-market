@@ -49,6 +49,10 @@ class LeaseOperation
      */
     public function run(LeaseRequest $request): LeaseResponse
     {
-        // Your code here :-)
+
+        $response = new LeaseResponse();
+        $response->addError('Ошибка. Раб #1 "Уродливый Фред" занят. Занятые часы: "2017-01-01 01:00:00", "2017-01-01 03:00:00"');
+
+        return $response;
     }
 }

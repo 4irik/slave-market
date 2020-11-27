@@ -23,9 +23,9 @@ class LeaseHour
      *
      * @param string $dateTime Y-m-d H
      */
-    public function __construct(string $dateTime)
+    public function __construct(\DateTimeImmutable $dateTime)
     {
-        $this->dateTime = DateTime::createFromFormat('Y-m-d H', $dateTime);
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -43,7 +43,7 @@ class LeaseHour
      *
      * @return DateTime
      */
-    public function getDateTime(): DateTime
+    public function getDateTime(): \DateTimeInterface
     {
         return $this->dateTime;
     }

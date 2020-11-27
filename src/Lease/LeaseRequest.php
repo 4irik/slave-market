@@ -2,6 +2,9 @@
 
 namespace SlaveMarket\Lease;
 
+use SlaveMarket\Master;
+use SlaveMarket\Slave;
+
 /**
  * Запрос на аренду раба
  *
@@ -9,15 +12,43 @@ namespace SlaveMarket\Lease;
  */
 class LeaseRequest
 {
-    /** @var int id хозяина */
-    public $masterId;
+    /** Id хозяина */
+    protected int $masterId;
 
-    /** @var int id раба */
-    public $slaveId;
+    /** ID раба */
+    protected int $slaveId;
 
-    /** @var string время начала работ Y-m-d H:i:s */
-    public $timeFrom;
+    /** время начала работ */
+    protected \DateTimeImmutable $timeFrom;
 
-    /** @var string время окончания работ Y-m-d H:i:s */
-    public $timeTo;
+    /** время окончания работ */
+    protected \DateTimeImmutable $timeTo;
+
+    public function __construct(int $masterId, int $slaveId, \DateTimeImmutable $timeFrom, \DateTimeImmutable $timeTo)
+    {
+        $this->masterId = $masterId;
+        $this->slaveId = $slaveId;
+        $this->timeFrom = $timeFrom;
+        $this->timeTo = $timeTo;
+    }
+
+    public function getMasterId(): int
+    {
+        return $this->masterId;
+    }
+
+    public function getSlaveId(): int
+    {
+        return $this->slaveId;
+    }
+
+    public function getTimeFrom(): \DateTimeImmutable
+    {
+        return $this->timeFrom;
+    }
+
+    public function getTimeTo(): \DateTimeImmutable
+    {
+        return $this->timeTo;
+    }
 }

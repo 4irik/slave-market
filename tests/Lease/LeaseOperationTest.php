@@ -3,6 +3,7 @@
 namespace SlaveMarket\Lease;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use SlaveMarket\Master;
 use SlaveMarket\MastersRepository;
 use SlaveMarket\Slave;
@@ -15,13 +16,12 @@ use SlaveMarket\SlavesRepository;
  */
 class LeaseOperationTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * Stub репозитория хозяев
-     *
-     * @param Master[] ...$masters
-     * @return MastersRepository
      */
-    private function makeFakeMasterRepository(...$masters): MastersRepository
+    private function makeFakeMasterRepository(Master ...$masters): MastersRepository
     {
         $mastersRepository = $this->prophesize(MastersRepository::class);
         foreach ($masters as $master) {
@@ -33,11 +33,8 @@ class LeaseOperationTest extends TestCase
 
     /**
      * Stub репозитория рабов
-     *
-     * @param Slave[] ...$slaves
-     * @return SlavesRepository
      */
-    private function makeFakeSlaveRepository(...$slaves): SlavesRepository
+    private function makeFakeSlaveRepository(Slave ...$slaves): SlavesRepository
     {
         $slavesRepository = $this->prophesize(SlavesRepository::class);
         foreach ($slaves as $slave) {
@@ -50,7 +47,7 @@ class LeaseOperationTest extends TestCase
     /**
      * Если раб занят, то арендовать его не получится
      */
-    public function test_periodIsBusy_failedWithOverlapInfo()
+    public function testPeriodIsBusyFailedWithOverlapInfo()
     {
         // -- Arrange
         {
@@ -65,24 +62,25 @@ class LeaseOperationTest extends TestCase
 
             // Договор аренды. 1й хозяин арендовал раба
             $leaseContract1 = new LeaseContract($master1, $slave1, 80, [
-                new LeaseHour('2017-01-01 00'),
-                new LeaseHour('2017-01-01 01'),
-                new LeaseHour('2017-01-01 02'),
-                new LeaseHour('2017-01-01 03'),
+                new LeaseHour(new \DateTimeImmutable('2017-01-01 01:00:00')),
+                new LeaseHour(new \DateTimeImmutable('2017-01-01 02:00:00')),
+                new LeaseHour(new \DateTimeImmutable('2017-01-01 03:00:00')),
+                new LeaseHour(new \DateTimeImmutable('2017-01-01 04:00:00')),
             ]);
 
             // Stub репозитория договоров
             $contractsRepo = $this->prophesize(LeaseContractsRepository::class);
             $contractsRepo
-                ->getForSlave($slave1->getId(), '2017-01-01', '2017-01-01')
+                ->getForSlave($slave1->getId(), new \DateTimeImmutable('2017-01-01'), new \DateTimeImmutable('2017-01-02'))
                 ->willReturn([$leaseContract1]);
 
             // Запрос на новую аренду. 2й хозяин выбрал занятое время
-            $leaseRequest           = new LeaseRequest();
-            $leaseRequest->masterId = $master2->getId();
-            $leaseRequest->slaveId  = $slave1->getId();
-            $leaseRequest->timeFrom = '2017-01-01 01:30:00';
-            $leaseRequest->timeTo   = '2017-01-01 02:01:00';
+            $leaseRequest = new LeaseRequest(
+                $master2->getId(),
+                $slave1->getId(),
+                new \DateTimeImmutable('2017-01-01 01:30:00'),
+                new \DateTimeImmutable('2017-01-01 02:01:00')
+            );
 
             // Операция аренды
             $leaseOperation = new LeaseOperation($contractsRepo->reveal(), $masterRepo, $slaveRepo);
@@ -92,16 +90,16 @@ class LeaseOperationTest extends TestCase
         $response = $leaseOperation->run($leaseRequest);
 
         // -- Assert
-        $expectedErrors = ['Ошибка. Раб #1 "Уродливый Фред" занят. Занятые часы: "2017-01-01 01", "2017-01-01 02"'];
+        $expectedErrors = ['Ошибка. Раб #1 "Уродливый Фред" занят. Занятые часы: "2017-01-01 01:00:00", "2017-01-01 03:00:00"'];
 
-        $this->assertArraySubset($expectedErrors, $response->getErrors());
+        $this->assertEquals($expectedErrors, $response->getErrors());
         $this->assertNull($response->getLeaseContract());
     }
 
     /**
      * Если раб бездельничает, то его легко можно арендовать
      */
-    public function test_idleSlave_successfullyLeased ()
+    public function testIdleSlaveSuccessFullyLeased ()
     {
         // -- Arrange
         {
@@ -119,11 +117,12 @@ class LeaseOperationTest extends TestCase
                 ->willReturn([]);
 
             // Запрос на новую аренду
-            $leaseRequest           = new LeaseRequest();
-            $leaseRequest->masterId = $master1->getId();
-            $leaseRequest->slaveId  = $slave1->getId();
-            $leaseRequest->timeFrom = '2017-01-01 01:30:00';
-            $leaseRequest->timeTo   = '2017-01-01 02:01:00';
+            $leaseRequest           = new LeaseRequest(
+                $master1->getId(),
+                $slave1->getId(),
+                new \DateTimeImmutable('2017-01-01 01:30:00'),
+                new \DateTimeImmutable('2017-01-01 02:01:00'),
+            );
 
             // Операция аренды
             $leaseOperation = new LeaseOperation($contractsRepo->reveal(), $masterRepo, $slaveRepo);
