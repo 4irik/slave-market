@@ -12,23 +12,43 @@ use SlaveMarket\Slave;
  */
 class LeaseContract
 {
-    /** @var Master Хозяин */
-    public $master;
+    /** Хозяин */
+    protected Master $master;
 
-    /** @var Slave Раб */
-    public $slave;
+    /** Раб */
+    protected Slave $slave;
 
-    /** @var float Стоимость */
-    public $price = 0;
+    /** Стоимость */
+    protected float $price = 0;
 
-    /** @var LeaseHour[] Список арендованных часов */
-    public $leasedHours = [];
+    /** Список арендованных часов */
+    protected LeasePeriod $leasePeriod;
 
-    public function __construct(Master $master, Slave $slave, float $price, array $leasedHours)
+    public function __construct(Master $master, Slave $slave, float $price, LeasePeriod $leasePeriod)
     {
-        $this->master      = $master;
-        $this->slave       = $slave;
-        $this->price       = $price;
-        $this->leasedHours = $leasedHours;
+        $this->master = $master;
+        $this->slave = $slave;
+        $this->price = $price;
+        $this->leasePeriod = $leasePeriod;
+    }
+
+    public function getMaster(): Master
+    {
+        return $this->master;
+    }
+
+    public function getSlave(): Slave
+    {
+        return $this->slave;
+    }
+
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    public function getLeasePeriod(): LeasePeriod
+    {
+        return $this->leasePeriod;
     }
 }

@@ -7,6 +7,10 @@
         {
             "name": "Pavel Bogdanov",
             "email": "p.bogdanov@ibc.ru"
+        },
+        {
+            "name": "Kirill Cherednichenko",
+            "email": "chekirilla@gmail.com"
         }
     ],
     "autoload": {

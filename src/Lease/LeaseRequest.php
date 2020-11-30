@@ -12,11 +12,9 @@ use SlaveMarket\Slave;
  */
 class LeaseRequest
 {
-    /** Id хозяина */
-    protected int $masterId;
+    protected Master $master;
 
-    /** ID раба */
-    protected int $slaveId;
+    protected Slave $slave;
 
     /** время начала работ */
     protected \DateTimeImmutable $timeFrom;
@@ -24,22 +22,22 @@ class LeaseRequest
     /** время окончания работ */
     protected \DateTimeImmutable $timeTo;
 
-    public function __construct(int $masterId, int $slaveId, \DateTimeImmutable $timeFrom, \DateTimeImmutable $timeTo)
+    public function __construct(Master $master, Slave $slave, \DateTimeImmutable $timeFrom, \DateTimeImmutable $timeTo)
     {
-        $this->masterId = $masterId;
-        $this->slaveId = $slaveId;
+        $this->master = $master;
+        $this->slave = $slave;
         $this->timeFrom = $timeFrom;
         $this->timeTo = $timeTo;
     }
 
-    public function getMasterId(): int
+    public function getMaster(): Master
     {
-        return $this->masterId;
+        return $this->master;
     }
 
-    public function getSlaveId(): int
+    public function getSlave(): Slave
     {
-        return $this->slaveId;
+        return $this->slave;
     }
 
     public function getTimeFrom(): \DateTimeImmutable
