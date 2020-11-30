@@ -29,7 +29,6 @@ class LeaseOperation
      */
     public function run(LeaseRequest $request): LeaseResponse
     {
-        // todo: заменить преобразование до начала и конца дня на округление
         $from = $this->hourRounder->round($request->getTimeFrom(), true);
         $to = $this->hourRounder->round($request->getTimeTo(), false);
         $leaseContracts = $this->contractsRepository->getForSlave($request->getSlave()->getId(), $from, $to);
