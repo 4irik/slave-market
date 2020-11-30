@@ -16,7 +16,7 @@ build: ## Сборка контейнера
 
 up: ## Запускаем контейнер
 	if test "$$(docker ps | grep -c $(APP_IMAGE_NAME))" -ne "1"; then \
-		docker run --rm --name $(APP_IMAGE_NAME) -u $(USER_ID):$(GROUP_ID) --expose=9000 -v "$$PWD":/app -w /app $(APP_CONTAINER_TAG) /bin/bash -c "tail -f /dev/null" & \
+		docker run --rm --name $(APP_IMAGE_NAME) -u $(USER_ID):$(GROUP_ID) --expose=9003 -v "$$PWD":/app -w /app $(APP_CONTAINER_TAG) /bin/bash -c "tail -f /dev/null" & \
 	fi
 
 down: ## Останавливаем контейнер
